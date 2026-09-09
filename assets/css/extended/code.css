@@ -1,0 +1,28 @@
+/* ==========================================================================
+   Code Block & Tab-Size Adaptation (按编程语言自适应 Tab 缩进)
+   ========================================================================== */
+
+/* 全局默认：将所有代码块的 Tab 缩进从浏览器默认的 8 重置为舒适的 4 */
+pre, code, .chroma {
+    tab-size: 4;
+    -moz-tab-size: 4;
+}
+
+/* Python / Go / Rust / Shell: 标准 4 字符缩进 */
+.language-python, [data-lang="python"], .code-file-container.language-python pre,
+.language-go,     [data-lang="go"],     .code-file-container.language-go pre,
+.language-rust,   [data-lang="rust"],   .code-file-container.language-rust pre,
+.language-bash,   [data-lang="bash"],   .code-file-container.language-bash pre,
+.language-sh,     [data-lang="sh"],     .code-file-container.language-sh pre {
+    tab-size: 4;
+    -moz-tab-size: 4;
+}
+
+/* 前端 / 配置类语言 (YAML / JSON / HTML / CSS): 2 字符轻量缩进 */
+.language-yaml,   [data-lang="yaml"],   .code-file-container.language-yaml pre,
+.language-json,   [data-lang="json"],   .code-file-container.language-json pre,
+.language-html,   [data-lang="html"],   .code-file-container.language-html pre,
+.language-css,    [data-lang="css"],    .code-file-container.language-css pre {
+    tab-size: 2;
+    -moz-tab-size: 2;
+}

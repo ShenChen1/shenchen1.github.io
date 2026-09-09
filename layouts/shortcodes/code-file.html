@@ -40,7 +40,7 @@
   {{- $highlightOpts := delimit $optsSlice "," -}}
 
   {{- if eq $header "true" -}}
-<div class="code-file-container" style="margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+<div class="code-file-container language-{{ $lang }}" style="margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
   <div class="code-file-header" style="background: var(--code-bg); padding: 6px 12px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
     <span style="font-family: monospace; font-weight: 600;">
       📄 <a href="{{ $res.RelPermalink }}" style="box-shadow: none;">{{ $file }}</a>
