@@ -14,6 +14,12 @@ theme = "PaperMod"
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
 
+  # 首页展示的内容区块
+  mainSections = ["posts", "notes", "projects"]
+
+  # 归档页面包含所有文章
+  ShowAllPagesInArchive = true
+
   # 首页不要把第一篇文章做成特殊大卡片
   disableSpecial1stPost = true
 
@@ -46,3 +52,11 @@ theme = "PaperMod"
   name = "About"
   url = "/about/"
   weight = 60
+
+[markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    lineNos = true
+    lineNumbersInTable = true
+    noClasses = false
