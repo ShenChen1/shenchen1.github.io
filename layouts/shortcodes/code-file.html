@@ -10,6 +10,9 @@
   {{- $raw := $res.Content -}}
   {{- $displayContent := $raw -}}
 
+  {{- /* 构建 highlight 选项，默认启用表格行号与样式类名 */ -}}
+  {{- $optsSlice := slice "lineNos=table" "noClasses=false" -}}
+
   {{- if $lines -}}
     {{- $lineArr := split $raw "\n" -}}
     {{- $parts := split $lines "-" -}}
@@ -24,7 +27,17 @@
       {{- end -}}
     {{- end -}}
     {{- $displayContent = delimit $selectedLines "\n" -}}
+    {{- $startLine := int (index $parts 0) -}}
+    {{- if gt $startLine 1 -}}
+      {{- $optsSlice = $optsSlice | append (printf "lineNoStart=%d" $startLine) -}}
+    {{- end -}}
   {{- end -}}
+
+  {{- if eq (.Get "linenos") "false" -}}
+    {{- $optsSlice = slice "lineNos=false" "noClasses=false" -}}
+  {{- end -}}
+
+  {{- $highlightOpts := delimit $optsSlice "," -}}
 
   {{- if eq $header "true" -}}
 <div class="code-file-container" style="margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
@@ -38,10 +51,10 @@
     </span>
   </div>
   <div style="margin: 0;">
-    {{ highlight $displayContent $lang "lineNos=false" }}
+    {{ highlight $displayContent $lang $highlightOpts }}
   </div>
 </div>
   {{- else -}}
-    {{ highlight $displayContent $lang "lineNos=false" }}
+    {{ highlight $displayContent $lang $highlightOpts }}
   {{- end -}}
 {{- end -}}
