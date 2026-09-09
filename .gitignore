@@ -13,3 +13,7 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Private documents / Sensitive info
+resume.md
+*resume*.md
