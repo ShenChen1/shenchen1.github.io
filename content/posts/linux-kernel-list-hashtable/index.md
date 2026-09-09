@@ -30,27 +30,7 @@ struct object {
 
 ### list_add — 头插法
 
-```c
-static void list_add_example()
-{
-    LIST_HEAD(obj_list);
-
-    struct object obj1 = { .id = 1, .name = "obj1" };
-    list_add(&obj1.node, &obj_list);
-
-    struct object obj2 = { .id = 2, .name = "obj2" };
-    list_add(&obj2.node, &obj_list);
-
-    struct object obj3 = { .id = 3, .name = "obj3" };
-    list_add(&obj3.node, &obj_list);
-
-    struct list_head* iter;
-    list_for_each(iter, &obj_list) {
-        struct object* obj = list_entry(iter, struct object, node);
-        printf("%s\n", obj->name);
-    }
-}
-```
+{{< code-file file="list_example.c" lines="11-38" lang="c" >}}
 
 输出（后插入的在前面）：
 
@@ -62,27 +42,7 @@ obj1
 
 ### list_add_tail — 尾插法
 
-```c
-static void list_add_tail_example()
-{
-    LIST_HEAD(obj_list);
-
-    struct object obj1 = { .id = 1, .name = "obj1" };
-    list_add_tail(&obj1.node, &obj_list);
-
-    struct object obj2 = { .id = 2, .name = "obj2" };
-    list_add_tail(&obj2.node, &obj_list);
-
-    struct object obj3 = { .id = 3, .name = "obj3" };
-    list_add_tail(&obj3.node, &obj_list);
-
-    struct list_head* iter;
-    list_for_each(iter, &obj_list) {
-        struct object* obj = list_entry(iter, struct object, node);
-        printf("%s\n", obj->name);
-    }
-}
-```
+{{< code-file file="list_example.c" lines="40-67" lang="c" >}}
 
 输出（保持插入顺序）：
 
@@ -94,29 +54,7 @@ obj3
 
 ### list_del — 删除节点
 
-```c
-static void list_del_example()
-{
-    LIST_HEAD(obj_list);
-
-    struct object obj1 = { .id = 1, .name = "obj1" };
-    list_add_tail(&obj1.node, &obj_list);
-
-    struct object obj2 = { .id = 2, .name = "obj2" };
-    list_add_tail(&obj2.node, &obj_list);
-
-    struct object obj3 = { .id = 3, .name = "obj3" };
-    list_add_tail(&obj3.node, &obj_list);
-
-    list_del(&obj2.node);  /* 删除 obj2 */
-
-    struct list_head* iter;
-    list_for_each(iter, &obj_list) {
-        struct object* obj = list_entry(iter, struct object, node);
-        printf("%s\n", obj->name);
-    }
-}
-```
+{{< code-file file="list_example.c" lines="69-99" lang="c" >}}
 
 输出：
 
@@ -129,76 +67,15 @@ obj3
 
 完整哈希表演示代码见 [`hashtable_example.c`](hashtable_example.c)：
 
-### 定义和插入
+### 增删查与遍历基础操作
 
-```c
-static void hashtable_example()
-{
-    /* 定义 2^3 = 8 个 bucket 的哈希表 */
-    DEFINE_HASHTABLE(htable, 3);
-    /* 等价于 struct hlist_head htable[8] = { [0 ... 7] = HLIST_HEAD_INIT }; */
-
-    struct object obj1 = { .id = 1, .name = "obj1" };
-    hash_add(htable, &obj1.node, obj1.id);
-
-    struct object obj2 = { .id = 2, .name = "obj2" };
-    hash_add(htable, &obj2.node, obj2.id);
-
-    struct object obj3 = { .id = 3, .name = "obj3" };
-    hash_add(htable, &obj3.node, obj3.id);
-
-    struct object obj9 = { .id = 9, .name = "obj9" };
-    hash_add(htable, &obj9.node, obj9.id);
-}
-```
-
-### 按 key 查找
-
-```c
-int key = 1;
-struct object* obj;
-hash_for_each_possible(htable, obj, node, key) {
-    if (obj->id == key) {
-        printf("key=%d => %s\n", key, obj->name);
-    }
-}
-```
+{{< code-file file="hashtable_example.c" lines="21-65" lang="c" >}}
 
 注意 `hash_for_each_possible` 遍历的是同一个 bucket 中的所有元素（因为不同 key 可能哈希到同一个 bucket），所以还需要额外比较 key。
 
-### 遍历整个哈希表
-
-```c
-int bkt;
-struct object* cur;
-hash_for_each(htable, bkt, cur, node) {
-    printf("bucket[%d]=> %s\n", bkt, cur->name);
-}
-```
-
 ### 查看 bucket 分布
 
-```c
-static void hashtable_show_buckets()
-{
-    DEFINE_HASHTABLE(htable, 3);
-
-    /* 插入 obj1(id=1), obj2(id=2), obj3(id=3), obj9(id=9) */
-    /* ... */
-
-    int i;
-    for (i = 0; i < HASH_SIZE(htable); ++i) {
-        if (!hlist_empty(&htable[i])) {
-            printf("bucket[%d]=> ", i);
-            struct object* obj;
-            hlist_for_each_entry(obj, &htable[i], node) {
-                printf("%s, ", obj->name);
-            }
-            printf("\n");
-        }
-    }
-}
-```
+{{< code-file file="hashtable_example.c" lines="113-156" lang="c" >}}
 
 由于哈希函数的映射，id=1 和 id=9 可能落在同一个 bucket 中，形成冲突链。
 
@@ -206,16 +83,7 @@ static void hashtable_show_buckets()
 
 同一个 bucket 中可以存放多个相同 key 的元素，它们形成链表：
 
-```c
-struct object obj1 = { .id = 0, .name = "obj1" };
-hash_add(htable, &obj1.node, obj1.id);
-
-struct object obj2 = { .id = 0, .name = "obj2" };
-hash_add(htable, &obj2.node, obj2.id);
-
-struct object obj3 = { .id = 0, .name = "obj3" };
-hash_add(htable, &obj3.node, obj3.id);
-```
+{{< code-file file="hashtable_example.c" lines="160-189" lang="c" >}}
 
 输出：
 

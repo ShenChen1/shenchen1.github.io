@@ -10,30 +10,13 @@ summary: "四种不同复杂度的斐波那契算法实现：递归 O(2^n)、迭
 
 最直观的实现，但存在大量重复计算，n 稍大就会超时：
 
-```python
-def f(n):
-    if n < 2:
-        return n
-    return f(n - 1) + f(n - 2)
-```
+{{< code-file file="fibonacci.py" lines="7-11" lang="python" >}}
 
 ## 方法二：迭代 — O(n)
 
 用两个变量滚动计算，空间 O(1)：
 
-```python
-def f1(n):
-    if n < 2:
-        return n
-
-    f0 = 0
-    f1 = 1
-    for i in range(2, n + 1):
-        tmp = f0 + f1
-        f0 = f1
-        f1 = tmp
-    return tmp
-```
+{{< code-file file="fibonacci.py" lines="13-23" lang="python" >}}
 
 ## 方法三：快速倍增 — O(log n)
 
@@ -44,26 +27,7 @@ def f1(n):
 
 将 n 转为二进制，从高位到低位扫描，每次做一个 "倍增" 步骤，遇到 1 时额外做一次加法：
 
-```python
-def f2(n):
-    k = n
-    bit = []
-    while k:
-        bit.append(k % 2)
-        k = k >> 1
-
-    a = 0
-    b = 1
-    for i in range(len(bit)-1, -1, -1):
-        tmp = a * (2 * b - a)
-        b = b * b + a * a
-        a = tmp
-        if bit[i]:
-            tmp = a + b
-            a = b
-            b = tmp
-    return a
-```
+{{< code-file file="fibonacci.py" lines="25-42" lang="python" >}}
 
 Python 的大整数支持让这个方法可以精确计算任意大的斐波那契数。
 
@@ -75,19 +39,11 @@ F(n) = (φ^n − ψ^n) / √5 ≈ round(φ^n / √5)
 
 其中 φ = (1 + √5) / 2 ≈ 1.618...
 
-```python
-def f3(n):
-    golden_ratio = (1 + 5 ** 0.5) / 2
-    return int((golden_ratio ** n + 1) / 5 ** 0.5)
-```
+{{< code-file file="fibonacci.py" lines="45-47" lang="python" >}}
 
 **精度问题**：使用浮点数运算，当 n > 70 时会因精度不足产生错误结果。如果需要精确计算大数，应该用方法三。
 
 ## 运行与对比
-
-完整可运行脚本见 [`fibonacci.py`](fibonacci.py)：
-
-{{< code-file file="fibonacci.py" lang="python" >}}
 
 运行测试与对比：
 
