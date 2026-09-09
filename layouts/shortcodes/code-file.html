@@ -1,0 +1,47 @@
+{{- $file := .Get "file" -}}
+{{- $lang := .Get "lang" | default (path.Ext $file | strings.TrimPrefix ".") -}}
+{{- $lines := .Get "lines" -}}
+{{- $header := .Get "header" | default "true" -}}
+{{- $res := .Page.Resources.Get $file -}}
+
+{{- if not $res -}}
+  {{- errorf "code-file: 找不到文件 '%s'，位于页面 '%s'" $file .Page.File.Path -}}
+{{- else -}}
+  {{- $raw := $res.Content -}}
+  {{- $displayContent := $raw -}}
+
+  {{- if $lines -}}
+    {{- $lineArr := split $raw "\n" -}}
+    {{- $parts := split $lines "-" -}}
+    {{- $start := sub (int (index $parts 0)) 1 -}}
+    {{- $end := int (index $parts 1) -}}
+    {{- if lt $start 0 }}{{ $start = 0 }}{{ end -}}
+    {{- if gt $end (len $lineArr) }}{{ $end = len $lineArr }}{{ end -}}
+    {{- $selectedLines := slice -}}
+    {{- range $idx, $line := $lineArr -}}
+      {{- if and (ge $idx $start) (lt $idx $end) -}}
+        {{- $selectedLines = $selectedLines | append $line -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $displayContent = delimit $selectedLines "\n" -}}
+  {{- end -}}
+
+  {{- if eq $header "true" -}}
+<div class="code-file-container" style="margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;">
+  <div class="code-file-header" style="background: var(--code-bg); padding: 6px 12px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);">
+    <span style="font-family: monospace; font-weight: 600;">
+      📄 <a href="{{ $res.RelPermalink }}" style="box-shadow: none;">{{ $file }}</a>
+      {{- with $lines }} <span style="opacity: 0.7; font-size: 0.8rem;">(L{{ . }})</span>{{ end -}}
+    </span>
+    <span>
+      <a href="{{ $res.RelPermalink }}" download style="box-shadow: none; font-size: 0.8rem; opacity: 0.8;">⬇️ 下载</a>
+    </span>
+  </div>
+  <div style="margin: 0;">
+    {{ highlight $displayContent $lang "lineNos=false" }}
+  </div>
+</div>
+  {{- else -}}
+    {{ highlight $displayContent $lang "lineNos=false" }}
+  {{- end -}}
+{{- end -}}

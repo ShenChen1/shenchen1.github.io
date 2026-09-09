@@ -1,0 +1,15 @@
+# Hugo build directories and temporary locks
+public/
+resources/_gen/
+.hugo_build.lock
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
